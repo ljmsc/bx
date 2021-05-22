@@ -11,13 +11,13 @@ import (
 func TestEncoder(t *testing.T) {
 	is := is.New(t)
 
-	valInt := 13
+	valInt := int32(13)
 	valUint64 := uint64(rand.Int63())
 	valStr := "my text"
 
-	raw, err := Encoder().WInt(valInt).WString(valStr).WUint64(valUint64).Encode()
+	raw, err := Encoder().Int32(valInt).String(valStr).Uint64(valUint64).Encode()
 	is.NoErr(err)
-	is.Equal(len(raw), 8+8+len(valStr)+8)
+	is.Equal(len(raw), 4+8+len(valStr)+8)
 }
 
 func TestStrings(t *testing.T) {
@@ -25,7 +25,7 @@ func TestStrings(t *testing.T) {
 	testVals := []string{"val1", "val2", "val3"}
 	size := len(strings.Join(testVals, ""))
 
-	raw, err := Encoder().WStrings(testVals).Encode()
+	raw, err := Encoder().Strings(testVals).Encode()
 	is.NoErr(err)
 	is.Equal(len(raw), 4*8+size)
 }
