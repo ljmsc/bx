@@ -6,32 +6,30 @@ import (
 	"fmt"
 )
 
-var (
-	ErrInsufficientData = fmt.Errorf("insufficient data")
-	ErrInvalidData      = fmt.Errorf("invalid data")
-)
+// ErrInvalidData .
+var ErrInvalidData = fmt.Errorf("invalid data")
 
 const (
 	uint64Size = 8
 )
 
+// ValueType is the basic interface for encoding and decoding of values
 type ValueType interface {
 	Decode(_data []byte) (int, error)
 	Encode() ([]byte, error)
 }
 
+// Bytes is the encoder / decoder for byte slices
 type Bytes struct {
 	value []byte
 }
 
+// String returns the string representation of the byte slice
 func (b *Bytes) String() string {
 	return string(b.value)
 }
 
-func (b *Bytes) Value() []byte {
-	return b.value
-}
-
+// Decode decodes the given data to a byte slice
 func (b *Bytes) Decode(_data []byte) (int, error) {
 	var val uint64
 	sizevt := &Number{size: 8, value: &val}
@@ -48,6 +46,7 @@ func (b *Bytes) Decode(_data []byte) (int, error) {
 	return size + uint64Size, nil
 }
 
+// Encode encodes a byte slice
 func (b *Bytes) Encode() ([]byte, error) {
 	rawSize, _ := (&Number{value: uint64(len(b.value))}).Encode()
 	raw := make([]byte, 0, len(rawSize)+len(b.value))
@@ -56,11 +55,13 @@ func (b *Bytes) Encode() ([]byte, error) {
 	return raw, nil
 }
 
+// Number is the encoder / decoder for number values
 type Number struct {
 	value interface{}
 	size  int
 }
 
+// Decode decodes the given data to a number value
 func (n *Number) Decode(_data []byte) (int, error) {
 	buff := bytes.NewBuffer(_data[:n.size])
 	if err := binary.Read(buff, binary.LittleEndian, n.value); err != nil {
@@ -69,6 +70,7 @@ func (n *Number) Decode(_data []byte) (int, error) {
 	return n.size, nil
 }
 
+// Encode encodes a number value
 func (n *Number) Encode() ([]byte, error) {
 	buff := bytes.Buffer{}
 	if err := binary.Write(&buff, binary.LittleEndian, n.value); err != nil {
