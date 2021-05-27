@@ -20,7 +20,7 @@ func TestEncoder(t *testing.T) {
 	is.Equal(len(raw), 4+8+len(valStr)+8)
 }
 
-func TestStrings(t *testing.T) {
+func TestEncodeStrings(t *testing.T) {
 	is := is.New(t)
 	testVals := []string{"val1", "val2", "val3"}
 	size := len(strings.Join(testVals, ""))
@@ -28,4 +28,20 @@ func TestStrings(t *testing.T) {
 	raw, err := Encoder().Strings(testVals).Encode()
 	is.NoErr(err)
 	is.Equal(len(raw), 4*8+size)
+}
+
+func TestEncodeFloa32(t *testing.T) {
+	is := is.New(t)
+	testVal := float32(1.56)
+	raw, err := Encoder().Float32(testVal).Encode()
+	is.NoErr(err)
+	is.Equal(4, len(raw))
+}
+
+func TestEncodeFloa64(t *testing.T) {
+	is := is.New(t)
+	testVal := float64(1.56)
+	raw, err := Encoder().Float64(testVal).Encode()
+	is.NoErr(err)
+	is.Equal(8, len(raw))
 }

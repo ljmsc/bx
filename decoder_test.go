@@ -23,7 +23,7 @@ func TestDecoder(t *testing.T) {
 	is.Equal(rval2, val2)
 }
 
-func TestWStrings(t *testing.T) {
+func TestDecodeStrings(t *testing.T) {
 	is := is.New(t)
 	testVals := []string{"val1", "val2", "val3"}
 	raw, _ := Encoder().Strings(testVals).Encode()
@@ -32,4 +32,26 @@ func TestWStrings(t *testing.T) {
 	retTestVals, err := dec.Strings()
 	is.NoErr(err)
 	is.Equal(retTestVals, testVals)
+}
+
+func TestDecodeFloat32(t *testing.T) {
+	is := is.New(t)
+	testVal := float32(1.56)
+	raw, _ := Encoder().Float32(testVal).Encode()
+
+	dec := Decoder(raw)
+	retTestVal, err := dec.Float32()
+	is.NoErr(err)
+	is.Equal(testVal, retTestVal)
+}
+
+func TestDecodeFloat64(t *testing.T) {
+	is := is.New(t)
+	testVal := float64(1.56)
+	raw, _ := Encoder().Float64(testVal).Encode()
+
+	dec := Decoder(raw)
+	retTestVal, err := dec.Float64()
+	is.NoErr(err)
+	is.Equal(testVal, retTestVal)
 }

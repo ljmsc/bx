@@ -93,6 +93,24 @@ func (d *D) Uint64() (uint64, error) {
 	return val, nil
 }
 
+func (d *D) Float32() (float32, error) {
+	var val float32
+	vt := Number{size: 4, value: &val}
+	if err := d.Read(&vt); err != nil {
+		return 0, err
+	}
+	return val, nil
+}
+
+func (d *D) Float64() (float64, error) {
+	var val float64
+	vt := Number{size: 8, value: &val}
+	if err := d.Read(&vt); err != nil {
+		return 0, err
+	}
+	return val, nil
+}
+
 func (d *D) String() (string, error) {
 	vt := Bytes{}
 	if err := d.Read(&vt); err != nil {

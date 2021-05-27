@@ -16,67 +16,75 @@ func Encoder() *E {
 	return &e
 }
 
-func (b *E) Write(vt ValueType) *E {
-	if b.values == nil {
-		b.values = []ValueType{}
+func (e *E) Write(vt ValueType) *E {
+	if e.values == nil {
+		e.values = []ValueType{}
 	}
-	b.values = append(b.values, vt)
-	return b
+	e.values = append(e.values, vt)
+	return e
 }
 
-func (b *E) Int8(val int8) *E {
-	return b.Write(&Number{value: val})
+func (e *E) Int8(val int8) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) Int16(val int16) *E {
-	return b.Write(&Number{value: val})
+func (e *E) Int16(val int16) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) Int32(val int32) *E {
-	return b.Write(&Number{value: val})
+func (e *E) Int32(val int32) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) Int64(val int64) *E {
-	return b.Write(&Number{value: val})
+func (e *E) Int64(val int64) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) Uint8(val uint8) *E {
-	return b.Write(&Number{value: val})
+func (e *E) Uint8(val uint8) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) Uint16(val uint16) *E {
-	return b.Write(&Number{value: val})
+func (e *E) Uint16(val uint16) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) Uint32(val uint32) *E {
-	return b.Write(&Number{value: val})
+func (e *E) Uint32(val uint32) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) Uint64(val uint64) *E {
-	return b.Write(&Number{value: val})
+func (e *E) Uint64(val uint64) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) String(val string) *E {
-	return b.Write(&Bytes{value: []byte(val)})
+func (e *E) Float32(val float32) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) Bytes(val []byte) *E {
-	return b.Write(&Bytes{value: val})
+func (e *E) Float64(val float64) *E {
+	return e.Write(&Number{value: val})
 }
 
-func (b *E) Strings(values []string) *E {
+func (e *E) String(val string) *E {
+	return e.Write(&Bytes{value: []byte(val)})
+}
+
+func (e *E) Bytes(val []byte) *E {
+	return e.Write(&Bytes{value: val})
+}
+
+func (e *E) Strings(values []string) *E {
 	n := len(values)
-	b.Uint64(uint64(n))
+	e.Uint64(uint64(n))
 	for _, val := range values {
-		b.String(val)
+		e.String(val)
 	}
-	return b
+	return e
 }
 
-func (b *E) Encode() ([]byte, error) {
+func (e *E) Encode() ([]byte, error) {
 	buff := bytes.Buffer{}
 
-	for _, vt := range b.values {
+	for _, vt := range e.values {
 		raw, err := vt.Encode()
 		if err != nil {
 			return nil, err
