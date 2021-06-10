@@ -3,11 +3,7 @@ package bx
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 )
-
-// ErrInvalidData .
-var ErrInvalidData = fmt.Errorf("invalid data")
 
 const (
 	uint64Size = 8
@@ -31,6 +27,9 @@ func (b *Bytes) String() string {
 
 // Decode decodes the given data to a byte slice
 func (b *Bytes) Decode(_data []byte) (int, error) {
+	if len(_data) < 8 {
+		return 0, ErrNotEnoughData
+	}
 	var val uint64
 	sizevt := &Number{size: 8, value: &val}
 	if _, err := sizevt.Decode(_data); err != nil {
@@ -63,6 +62,9 @@ type Number struct {
 
 // Decode decodes the given data to a number value
 func (n *Number) Decode(_data []byte) (int, error) {
+	if len(_data) < n.size {
+		return 0, ErrNotEnoughData
+	}
 	buff := bytes.NewBuffer(_data[:n.size])
 	if err := binary.Read(buff, binary.LittleEndian, n.value); err != nil {
 		return 0, err
