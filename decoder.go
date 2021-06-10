@@ -1,5 +1,16 @@
 package bx
 
+import (
+	"errors"
+)
+
+var (
+	// ErrNotEnoughData .
+	ErrNotEnoughData = errors.New("not enough byte data")
+	// ErrInvalidData .
+	ErrInvalidData = errors.New("invalid data")
+)
+
 // D is the buffer for decoding values
 type D struct {
 	raw []byte
@@ -19,6 +30,9 @@ func (d *D) Read(vt ValueType) error {
 	n, err := vt.Decode(d.raw)
 	if err != nil {
 		return err
+	}
+	if len(d.raw) < n {
+		return ErrNotEnoughData
 	}
 	d.raw = d.raw[n:]
 	return nil
