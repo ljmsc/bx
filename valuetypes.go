@@ -3,6 +3,7 @@ package bx
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
 const (
@@ -67,7 +68,7 @@ func (n *Number) Decode(_data []byte) (int, error) {
 	}
 	buff := bytes.NewBuffer(_data[:n.size])
 	if err := binary.Read(buff, binary.LittleEndian, n.value); err != nil {
-		return 0, err
+		return 0, fmt.Errorf("can't read from buffer: %w", err)
 	}
 	return n.size, nil
 }
@@ -76,7 +77,7 @@ func (n *Number) Decode(_data []byte) (int, error) {
 func (n *Number) Encode() ([]byte, error) {
 	buff := bytes.Buffer{}
 	if err := binary.Write(&buff, binary.LittleEndian, n.value); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("can't write to buffer: %w", err)
 	}
 	return buff.Bytes(), nil
 }
