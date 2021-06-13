@@ -2,6 +2,8 @@ package bx
 
 import (
 	"errors"
+	"fmt"
+	"time"
 )
 
 var (
@@ -29,7 +31,7 @@ func Decoder(raw []byte) *D {
 func (d *D) Read(vt ValueType) error {
 	n, err := vt.Decode(d.raw)
 	if err != nil {
-		return err
+		return fmt.Errorf("can't decode value type: %w", err)
 	}
 	if len(d.raw) < n {
 		return ErrNotEnoughData
@@ -171,4 +173,15 @@ func (d *D) Strings() ([]string, error) {
 		values = append(values, val)
 	}
 	return values, nil
+}
+
+// Time read a time value from the decoder in UTC
+func (d *D) Time() (time.Time, error) {
+	nano, err := d.Int64()
+	if err != nil {
+		return time.Time{}, err
+	}
+	t := time.Unix(0, nano)
+	t = t.UTC()
+	return t, nil
 }

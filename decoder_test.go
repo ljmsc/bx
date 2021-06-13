@@ -2,6 +2,7 @@ package bx
 
 import (
 	"testing"
+	"time"
 
 	"github.com/matryer/is"
 )
@@ -54,4 +55,16 @@ func TestDecodeFloat64(t *testing.T) {
 	retTestVal, err := dec.Float64()
 	is.NoErr(err)
 	is.Equal(testVal, retTestVal)
+}
+
+func TestDecodeTime(t *testing.T) {
+	is := is.New(t)
+	testVal := time.Date(2020, 03, 01, 12, 00, 45, 0, time.UTC)
+	raw, _ := Encoder().Time(testVal).Encode()
+
+	dec := Decoder(raw)
+	retTime, err := dec.Time()
+	is.NoErr(err)
+	is.Equal(testVal, retTime)
+	is.Equal(testVal.Unix(), retTime.Unix())
 }

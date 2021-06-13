@@ -3,6 +3,7 @@ package bx
 import (
 	"bytes"
 	"fmt"
+	"time"
 )
 
 // E is the buffer to encode collected values to one byte slice
@@ -97,6 +98,11 @@ func (e *E) Strings(values []string) *E {
 	return e
 }
 
+// Time writes a time value to the encoder
+func (e *E) Time(val time.Time) *E {
+	return e.Int64(val.UnixNano())
+}
+
 // Encode encodes all written values
 func (e *E) Encode() ([]byte, error) {
 	buff := bytes.Buffer{}
@@ -104,7 +110,7 @@ func (e *E) Encode() ([]byte, error) {
 	for _, vt := range e.values {
 		raw, err := vt.Encode()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("can encode value type: %w", err)
 		}
 		_, err = buff.Write(raw)
 		if err != nil {
