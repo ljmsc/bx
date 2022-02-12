@@ -27,6 +27,10 @@ func Decoder(raw []byte) *D {
 	return &d
 }
 
+func (d *D) Size() int {
+	return len(d.raw)
+}
+
 // Read reads any value which implements ValueType to the decoder
 func (d *D) Read(vt ValueType) error {
 	n, err := vt.Decode(d.raw)
