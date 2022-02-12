@@ -31,7 +31,7 @@ func (d *D) Size() int {
 	return len(d.raw)
 }
 
-// Read reads any value which implements ValueType to the decoder
+// Read reads any value which implements ValueType from the decoder
 func (d *D) Read(vt ValueType) error {
 	n, err := vt.Decode(d.raw)
 	if err != nil {
@@ -42,6 +42,24 @@ func (d *D) Read(vt ValueType) error {
 	}
 	d.raw = d.raw[n:]
 	return nil
+}
+
+// ReadSlice .
+func (d *D) ReadSlice(vtFunc func() ValueType) ([]ValueType, error) {
+	size, err := d.Int64()
+	if err != nil {
+		return nil, err
+	}
+
+	vts := make([]ValueType, 0, size)
+	for i := int64(0); i < size; i++ {
+		lvt := vtFunc()
+		if err := d.Read(lvt); err != nil {
+			return nil, err
+		}
+		vts = append(vts, lvt)
+	}
+	return vts, nil
 }
 
 // Int8 reads a int8 value from the decoder

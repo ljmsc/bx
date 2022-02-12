@@ -19,12 +19,22 @@ func Encoder() *E {
 	return &e
 }
 
-// Write reads any value which implements ValueType to the encoder
+// Write writes any value which implements ValueType to the encoder
 func (e *E) Write(vt ValueType) *E {
 	if e.values == nil {
 		e.values = []ValueType{}
 	}
 	e.values = append(e.values, vt)
+	return e
+}
+
+// WriteSlice writes any slice of value which implements ValueType
+func (e *E) WriteSlice(vt []ValueType) *E {
+	if e.values == nil {
+		e.values = []ValueType{}
+	}
+	e.Int64(int64(len(vt)))
+	e.values = append(e.values, vt...)
 	return e
 }
 

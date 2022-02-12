@@ -9,6 +9,30 @@ import (
 	"github.com/matryer/is"
 )
 
+type Dummy struct {
+	Name  string
+	Value int32
+}
+
+func (d *Dummy) Encode() ([]byte, error) {
+	return Encoder().String(d.Name).Int32(d.Value).Encode()
+}
+
+func (d *Dummy) Decode(_data []byte) (int, error) {
+	startLen := len(_data)
+	dec := Decoder(_data)
+	var err error
+	d.Name, err = dec.String()
+	if err != nil {
+		return 0, err
+	}
+	d.Value, err = dec.Int32()
+	if err != nil {
+		return 0, err
+	}
+	return startLen - dec.Size(), nil
+}
+
 func TestEncoder(t *testing.T) {
 	is := is.New(t)
 
@@ -53,4 +77,42 @@ func TestEncodeTime(t *testing.T) {
 	raw, err := Encoder().Time(testVal).Encode()
 	is.NoErr(err)
 	is.Equal(8, len(raw))
+}
+
+func TestEncodeDecodeValueTypeSlice(t *testing.T) {
+	is := is.New(t)
+	testData := []Dummy{
+		{
+			Name:  "test1",
+			Value: 1,
+		},
+		{
+			Name:  "test2",
+			Value: 2,
+		},
+		{
+			Name:  "test3",
+			Value: 3,
+		},
+	}
+	testDataVt := make([]ValueType, 0, len(testData))
+	for _, td := range testData {
+		ltd := td
+		testDataVt = append(testDataVt, &ltd)
+	}
+	raw, err := Encoder().WriteSlice(testDataVt).Encode()
+	is.NoErr(err)
+
+	dec := Decoder(raw)
+	resultVt, err := dec.ReadSlice(func() ValueType {
+		return &Dummy{}
+	})
+	is.NoErr(err)
+	is.Equal(3, len(resultVt))
+
+	result := make([]Dummy, 0, len(resultVt))
+	for _, vt := range resultVt {
+		result = append(result, *vt.(*Dummy))
+	}
+	is.Equal(testData, result)
 }
