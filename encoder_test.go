@@ -104,15 +104,12 @@ func TestEncodeDecodeValueTypeSlice(t *testing.T) {
 	is.NoErr(err)
 
 	dec := Decoder(raw)
-	resultVt, err := dec.ReadSlice(func() ValueType {
-		return &Dummy{}
+	result := []Dummy{}
+	err = dec.ReadSlice(func() ValueType { return &Dummy{} }, func(valueType ValueType) error {
+		result = append(result, *valueType.(*Dummy))
+		return nil
 	})
 	is.NoErr(err)
-	is.Equal(3, len(resultVt))
-
-	result := make([]Dummy, 0, len(resultVt))
-	for _, vt := range resultVt {
-		result = append(result, *vt.(*Dummy))
-	}
+	is.Equal(3, len(result))
 	is.Equal(testData, result)
 }

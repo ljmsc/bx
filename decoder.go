@@ -45,21 +45,22 @@ func (d *D) Read(vt ValueType) error {
 }
 
 // ReadSlice .
-func (d *D) ReadSlice(vtFunc func() ValueType) ([]ValueType, error) {
+func (d *D) ReadSlice(instanceFunc func() ValueType, applyFunc func(valueType ValueType) error) error {
 	size, err := d.Int64()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	vts := make([]ValueType, 0, size)
 	for i := int64(0); i < size; i++ {
-		lvt := vtFunc()
+		lvt := instanceFunc()
 		if err := d.Read(lvt); err != nil {
-			return nil, err
+			return err
 		}
-		vts = append(vts, lvt)
+		if err := applyFunc(lvt); err != nil {
+			return err
+		}
 	}
-	return vts, nil
+	return nil
 }
 
 // Int8 reads a int8 value from the decoder
